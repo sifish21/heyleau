@@ -16,19 +16,19 @@
 import sqlite3
 
 
-def _build_animal(result_set_item):
-    animal = {}
-    animal["id"] = result_set_item[0]
-    animal["nom"] = result_set_item[1]
-    animal["espece"] = result_set_item[2]
-    animal["race"] = result_set_item[3]
-    animal["age"] = result_set_item[4]
-    animal["description"] = result_set_item[5]
-    animal["courriel"] = result_set_item[6]
-    animal["adresse"] = result_set_item[7]
-    animal["ville"] = result_set_item[8]
-    animal["cp"] = result_set_item[9]
-    return animal
+def _build_rendezvous(result_set_item):
+    rendezvous = {}
+    rendezvous["id"] = result_set_item[0]
+    rendezvous["nom"] = result_set_item[1]
+    rendezvous["num_tattoo"] = result_set_item[2]
+    rendezvous["mois"] = result_set_item[3]
+    rendezvous["jour"] = result_set_item[4]
+    rendezvous["description"] = result_set_item[5]
+    rendezvous["depot"] = result_set_item[6]
+    rendezvous["prix_total"] = result_set_item[7]
+    rendezvous["taxes_dues"] = result_set_item[8]
+    rendezvous["tip"] = result_set_item[9]
+    return rendezvous
 
 
 class Database:
@@ -37,53 +37,43 @@ class Database:
 
     def get_connection(self):
         if self.connection is None:
-            self.connection = sqlite3.connect('db/animaux.db')
+            self.connection = sqlite3.connect('db/rendezvous.db')
         return self.connection
 
     def disconnect(self):
         if self.connection is not None:
             self.connection.close()
 
-    def get_animaux(self):
+    def get_all_rendezvous(self):
         cursor = self.get_connection().cursor()
-        query = ("select id, nom, espece, race, age, description, "
-                 "courriel, adresse, ville, cp from animaux")
+        query = ("select id, nom, num_tattoo, mois, jour, description, "
+                 "depot, prix_total, taxes_dues, tip from rendezvous")
         cursor.execute(query)
         all_data = cursor.fetchall()
-        return [_build_animal(item) for item in all_data]
+        return [_build_rendezvous(item) for item in all_data]
 
-    def get_animal(self, animal_id):
+    def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
-        query = ("select id, nom, espece, race, age, description, courriel, "
-                 "adresse, ville, cp from animaux where id = ?")
-        cursor.execute(query, (animal_id,))
+        query = ("select id, nom, num_tattoo, mois, jour, description, depot, "
+                 "prix_total, taxes_dues, tip from rendezvous where id = ?")
+        cursor.execute(query, (rendezvous_id,))
         item = cursor.fetchone()
         if item is None:
             return item
         else:
-            return _build_animal(item)
+            return _build_rendezvous(item)
 
-    def add_animal(self, nom, espece, race, age, description, courriel,
-                   adresse, ville, cp):
+    def add_rendezvous(self, nom, num_tattoo, mois, jour, description, depot,
+                   prix_total, taxes_dues, tip):
         connection = self.get_connection()
-        query = ("insert into animaux(nom, espece, race, age, description, "
-                 "courriel, adresse, ville, cp) "
+        query = ("insert into rendezvous(nom, num_tattoo, mois, jour, description, "
+                 "depot, prix_total, taxes_dues, tip) "
                  "values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        connection.execute(query, (nom, espece, race, age, description,
-                                   courriel, adresse, ville, cp))
+        connection.execute(query, (nom, num_tattoo, mois, jour, description,
+                                   depot, prix_total, taxes_dues, tip))
         cursor = connection.cursor()
         cursor.execute("select last_insert_rowid()")
         lastId = cursor.fetchone()[0]
         connection.commit()
         return lastId
-    
-    def get_match(self, prefix):
-        prefix = prefix + '%'
-        cursor = self.get_connection().cursor()
-        query = ("SELECT id FROM animaux WHERE espece LIKE ? OR race LIKE ?")
-        cursor.execute(query, (prefix ,prefix))
-        all_items = cursor.fetchall()
-        if all_items is None:
-            return all_items
-        else:
-            return [matching for matching in all_items]
+
