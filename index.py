@@ -17,7 +17,6 @@ from flask import render_template
 from flask import g
 from flask import redirect,url_for,request
 from .database import Database
-import random
 import re
 
 app = Flask(__name__, static_url_path="", static_folder="static")
@@ -32,13 +31,20 @@ def get_db():
 def val_username(username):
     if(len(username) > 0):
         db = get_db()
-        return db.verify_user(username)
-
+        valid = db.verify_user
+        db.disconnect()
+        return valid
     else:
         return False
 
-
-
+def val_password(username, password):
+    if(len(password) > 0):
+        db = get_db()
+        valid = db.verify_password(username, password)
+        db.disconnect()
+        return valid
+    else:
+        return False
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -58,8 +64,9 @@ def index():
 @app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
+    password = request.form["floatingPassword"]
     print(username)
-    if(val_username(username)):
+    if(val_password(username, password) and val_username(username)):
         return render_template('page.html')
     else:
         return render_template('index.html', username=username)

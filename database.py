@@ -98,3 +98,14 @@ class Database:
         connection.close()
         username_exists = bool(result)
         return username_exists
+    
+    def verify_password(self, username, password):
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        query = ("select exists (select 1 from users where username = ? and password = ?)")
+        cursor.execute(query, (username, password))
+        result = cursor.fetchone()[0]
+        cursor.close()
+        connection.close()
+        valid_password = bool(result)
+        return valid_password
