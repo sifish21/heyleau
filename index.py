@@ -29,6 +29,15 @@ def get_db():
         g._database = Database()
     return g._database
 
+def val_username(username):
+    if(len(username) > 0):
+        db = get_db()
+        return db.verify_user(username)
+
+    else:
+        return False
+
+
 
 
 @app.teardown_appcontext
@@ -42,8 +51,17 @@ def close_connection(exception):
 def index():
     db = get_db()
     rdv_test = db.get_rendezvous(1)
-
     db.disconnect()
 
     return render_template('index.html', rdv_test=rdv_test)
 
+@app.route('/page', methods=["POST"])
+def page():
+    username = request.form["floatingInput"]
+    print(username)
+    if(val_username(username)):
+        return render_template('page.html')
+    else:
+        return render_template('index.html', username=username)
+    
+    

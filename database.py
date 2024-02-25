@@ -19,15 +19,16 @@ import sqlite3
 def _build_rendezvous(result_set_item):
     rendezvous = {}
     rendezvous["id"] = result_set_item[0]
-    rendezvous["nom"] = result_set_item[1]
-    rendezvous["num_tattoo"] = result_set_item[2]
-    rendezvous["mois"] = result_set_item[3]
-    rendezvous["jour"] = result_set_item[4]
-    rendezvous["description"] = result_set_item[5]
-    rendezvous["depot"] = result_set_item[6]
-    rendezvous["prix_total"] = result_set_item[7]
-    rendezvous["taxes_dues"] = result_set_item[8]
-    rendezvous["tip"] = result_set_item[9]
+    rendezvous["user_id"] = result_set_item[1]
+    rendezvous["nom"] = result_set_item[2]
+    rendezvous["num_tattoo"] = result_set_item[3]
+    rendezvous["mois"] = result_set_item[4]
+    rendezvous["jour"] = result_set_item[5]
+    rendezvous["description"] = result_set_item[6]
+    rendezvous["depot"] = result_set_item[7]
+    rendezvous["prix_total"] = result_set_item[8]
+    rendezvous["taxes_dues"] = result_set_item[9]
+    rendezvous["tip"] = result_set_item[10]
     return rendezvous
 
 
@@ -46,7 +47,7 @@ class Database:
 
     def get_all_rendezvous(self):
         cursor = self.get_connection().cursor()
-        query = ("select id, nom, num_tattoo, mois, jour, description, "
+        query = ("select id, user_id, nom, num_tattoo, mois, jour, description, "
                  "depot, prix_total, taxes_dues, tip from rendezvous")
         cursor.execute(query)
         all_data = cursor.fetchall()
@@ -54,7 +55,7 @@ class Database:
 
     def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
-        query = ("select id, nom, num_tattoo, mois, jour, description, depot, "
+        query = ("select id, user_id, nom, num_tattoo, mois, jour, description, depot, "
                  "prix_total, taxes_dues, tip from rendezvous where id = ?")
         cursor.execute(query, (rendezvous_id,))
         item = cursor.fetchone()
@@ -66,9 +67,9 @@ class Database:
     def add_rendezvous(self, nom, num_tattoo, mois, jour, description, depot,
                    prix_total, taxes_dues, tip):
         connection = self.get_connection()
-        query = ("insert into rendezvous(nom, num_tattoo, mois, jour, description, "
+        query = ("insert into rendezvous(user_id, nom, num_tattoo, mois, jour, description, "
                  "depot, prix_total, taxes_dues, tip) "
-                 "values(?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                 "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
         connection.execute(query, (nom, num_tattoo, mois, jour, description,
                                    depot, prix_total, taxes_dues, tip))
         cursor = connection.cursor()
@@ -76,4 +77,24 @@ class Database:
         lastId = cursor.fetchone()[0]
         connection.commit()
         return lastId
-
+    
+    def add_user(self, username, password):
+        connection = self.get_connection()
+        query = ("insert into users(username, password) values(?, ?)")
+        connection.execute(query, (username, password))
+        cursor = connection.cursor()
+        cursor.execute("select last_insert_rowid()")
+        lastID = cursor.fetchone()[0]
+        connection.commit()
+        return lastID
+    
+    def verify_user(self, username):
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        query = ("select exists (select 1 from users where username = ?)")
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()[0]
+        cursor.close()
+        connection.close()
+        username_exists = bool(result)
+        return username_exists

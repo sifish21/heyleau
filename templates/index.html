@@ -1,4 +1,32 @@
 {% extends 'menu.html' %}
 {% block content %}
- <h5>{{rdv_test.nom}}</h5>
+<div class="container-fluid">
+    <div class="row" style="height: 100px; background-color: pink;">
+
+    </div>
+    <div class="row justify-content-sm-center" id="rangee-1-register">
+        <div class="col-sm-auto" id="register-container">
+            <form id="form" action="/page" method="post">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingInput" name="floatingInput" placeholder="bellibelle">
+                    <label for="floatingInput">Username</label>
+                </div>
+                {% if username %}
+                <div id="error-message-username">
+                    ** Bien essayé {{username}} !
+                </div>
+                {% endif %}
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingPassword" name="floatingPassword" placeholder="Mot de Passe">
+                    <label for="floatingPassword">Mot de Passe</label>
+                </div>
+                <div class="form-floating">
+                    <input type="submit" id="submit-button" class="form-control" value="soummettre" disabled>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script src="js/index.js"></script>
+
 {% endblock %}

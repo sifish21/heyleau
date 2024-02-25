@@ -1,0 +1,31 @@
+#logo {
+    height: 150x;
+    width: 450px;
+}
+
+#top-page {
+    background-color: pink;
+}
+
+#register-container {
+    border: 2px solid black;
+    padding: 15px;
+    border-radius: 20px;
+    width: 30%;
+    background-color: white;
+}
+
+#rangee-1-register {
+    padding: 25px;
+    background-color: pink;
+}
+
+#submit-button {
+    padding: 10px;
+    
+}
+
+#error-message-username {
+    font-size: small;
+    color: palevioletred;
+}
