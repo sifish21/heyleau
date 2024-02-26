@@ -53,7 +53,7 @@ def close_connection(exception):
         db.disconnect()
 
 
-@app.route('/')
+#@app.route('/')
 def index():
     db = get_db()
     rdv_test = db.get_rendezvous(1)
@@ -61,14 +61,19 @@ def index():
 
     return render_template('index.html', rdv_test=rdv_test)
 
-@app.route('/page', methods=["POST"])
+#@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
-    print(username)
     if(val_password(username, password) and val_username(username)):
         return render_template('page.html')
     else:
         return render_template('index.html', username=username)
     
-    
+@app.route('/')
+def developpement():
+    db = get_db()
+    resultat = db.total_mensuel("tip", 1 , 2024, 1)
+    print(resultat)
+    db.disconnect()
+    return render_template('page.html')

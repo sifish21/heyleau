@@ -29,3 +29,9 @@
     font-size: small;
     color: palevioletred;
 }
+
+.total-page {
+    text-align: center;
+    border: 2px solid black;
+    margin: 15px;
+}
