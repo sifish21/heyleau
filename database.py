@@ -25,11 +25,10 @@ def _build_rendezvous(result_set_item):
     rendezvous["jour"] = result_set_item[4]
     rendezvous["mois"] = result_set_item[5]
     rendezvous["annee"] = result_set_item[6]
-    rendezvous["description"] = result_set_item[7]
-    rendezvous["depot"] = result_set_item[8]
-    rendezvous["prix_total"] = result_set_item[9]
-    rendezvous["taxes_dues"] = result_set_item[10]
-    rendezvous["tip"] = result_set_item[11]
+    rendezvous["depot"] = result_set_item[7]
+    rendezvous["prix_total"] = result_set_item[8]
+    rendezvous["taxes_dues"] = result_set_item[9]
+    rendezvous["tip"] = result_set_item[10]
     return rendezvous
 
 
@@ -48,7 +47,7 @@ class Database:
 
     def get_all_rendezvous(self):
         cursor = self.get_connection().cursor()
-        query = ("select id, user_id, nom, num_tattoo, mois, jour, description, "
+        query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, "
                  "depot, prix_total, taxes_dues, tip from rendezvous")
         cursor.execute(query)
         all_data = cursor.fetchall()
@@ -56,7 +55,7 @@ class Database:
 
     def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
-        query = ("select id, user_id, nom, num_tattoo, mois, jour, description, depot, "
+        query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, depot, "
                  "prix_total, taxes_dues, tip from rendezvous where id = ?")
         cursor.execute(query, (rendezvous_id,))
         item = cursor.fetchone()
@@ -111,31 +110,27 @@ class Database:
         valid_password = bool(result)
         return valid_password
     
-    def total_annuel(self, column_name, annee, user_id):
+    def total_annuel(self, column_name, annee, user_id, connection):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
-            connection = self.get_connection()
             cursor = connection.cursor()
             query = (f"SELECT SUM( {column_name} ) AS total FROM rendezvous r JOIN users u "
                         "ON r.user_id = u.user_id WHERE annee = ? AND r.user_id = ?")
             cursor.execute(query, (annee, user_id))
             result = cursor.fetchone()[0]
             cursor.close()
-            connection.close()
             
             return result
         else:
             return None
 
-    def total_mensuel(self, column_name, mois, annee, user_id):
+    def total_mensuel(self, column_name, mois, annee, user_id, connection):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
-            connection = self.get_connection()
             cursor = connection.cursor()
             query = (f"SELECT SUM( {column_name} ) AS total FROM rendezvous r JOIN users u "
                         "ON r.user_id = u.user_id WHERE mois = ? AND annee = ? AND r.user_id = ?")
             cursor.execute(query, (mois, annee, user_id))
             result = cursor.fetchone()[0]
             cursor.close()
-            connection.close()
 
             return result
         else:

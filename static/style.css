@@ -30,8 +30,25 @@
     color: palevioletred;
 }
 
-.total-page {
+.total-page-container {
     text-align: center;
-    border: 2px solid black;
+    border: 4px solid rgb(216, 112, 147);
     margin: 15px;
+    border-radius: 10px;
+    padding: 1px;
+    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.montant-page {
+    padding-top: 50px;
+    font-weight: bold;
+    font-size: 20px;
+    
+}
+
+.element-page {
+    text-align: left;
+    font-size: 25px;
+    color: palevioletred;
+    font-weight: bold;
 }

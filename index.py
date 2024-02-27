@@ -18,6 +18,7 @@ from flask import g
 from flask import redirect,url_for,request
 from .database import Database
 import re
+import datetime
 
 app = Flask(__name__, static_url_path="", static_folder="static")
 
@@ -31,7 +32,7 @@ def get_db():
 def val_username(username):
     if(len(username) > 0):
         db = get_db()
-        valid = db.verify_user
+        valid = db.verify_user(username)
         db.disconnect()
         return valid
     else:
@@ -55,25 +56,34 @@ def close_connection(exception):
 
 #@app.route('/')
 def index():
-    db = get_db()
-    rdv_test = db.get_rendezvous(1)
-    db.disconnect()
 
-    return render_template('index.html', rdv_test=rdv_test)
+    return render_template('index.html')
 
 #@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
     if(val_password(username, password) and val_username(username)):
-        return render_template('page.html')
+        current_year = datetime.datetime.now().year
+        db = get_db()
+        connection = db.get_connection()
+        prix_total = db.total_annuel("prix_total", current_year, 1, connection)
+        #tip = db.total_annuel("tip", current_year, 1, connection)
+        #taxes = db.total_annuel("taxes_dues", current_year, 1, connection)
+        #depot = db.total_annuel("depot", current_year, 1, connection)
+        connection.close()
+        db.disconnect()
+        return render_template('page.html', prix_total=prix_total)
     else:
         return render_template('index.html', username=username)
     
 @app.route('/')
 def developpement():
     db = get_db()
-    resultat = db.total_mensuel("tip", 1 , 2024, 1)
-    print(resultat)
+    connection = db.get_connection()
+    prix = db.total_annuel("prix_total", 2024, 1, connection)
+    tip = db.total_annuel("tip", 2024, 1, connection)
+    taxes = db.total_annuel("taxes_dues", 2024, 1, connection)
+    connection.close()
     db.disconnect()
-    return render_template('page.html')
+    return render_template('page.html', prix=prix, tip=tip, taxes=taxes )
