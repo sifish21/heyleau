@@ -33,7 +33,6 @@ def val_username(username):
     if(len(username) > 0):
         db = get_db()
         valid = db.verify_user(username)
-        db.disconnect()
         return valid
     else:
         return False
@@ -42,7 +41,6 @@ def val_password(username, password):
     if(len(password) > 0):
         db = get_db()
         valid = db.verify_password(username, password)
-        db.disconnect()
         return valid
     else:
         return False
@@ -54,30 +52,27 @@ def close_connection(exception):
         db.disconnect()
 
 
-#@app.route('/')
+@app.route('/')
 def index():
 
     return render_template('index.html')
 
-#@app.route('/page', methods=["POST"])
+@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
-    if(val_password(username, password) and val_username(username)):
+    if(val_username(username) and val_password(username, password)):
         current_year = datetime.datetime.now().year
         db = get_db()
-        connection = db.get_connection()
-        prix_total = db.total_annuel("prix_total", current_year, 1, connection)
-        #tip = db.total_annuel("tip", current_year, 1, connection)
-        #taxes = db.total_annuel("taxes_dues", current_year, 1, connection)
+        prix_total = db.total_annuel("prix_total", current_year, 1)
+        tip = db.total_annuel("tip", current_year, 1)
+        taxes = db.total_annuel("taxes_dues", current_year, 1)
         #depot = db.total_annuel("depot", current_year, 1, connection)
-        connection.close()
-        db.disconnect()
-        return render_template('page.html', prix_total=prix_total)
+        return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes)
     else:
         return render_template('index.html', username=username)
     
-@app.route('/')
+#@app.route('/')
 def developpement():
     db = get_db()
     connection = db.get_connection()

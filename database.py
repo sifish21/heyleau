@@ -95,7 +95,6 @@ class Database:
         cursor.execute(query, (username,))
         result = cursor.fetchone()[0]
         cursor.close()
-        connection.close()
         username_exists = bool(result)
         return username_exists
     
@@ -106,32 +105,31 @@ class Database:
         cursor.execute(query, (username, password))
         result = cursor.fetchone()[0]
         cursor.close()
-        connection.close()
         valid_password = bool(result)
         return valid_password
     
-    def total_annuel(self, column_name, annee, user_id, connection):
+    def total_annuel(self, column_name, annee, user_id):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
+            connection = self.get_connection()
             cursor = connection.cursor()
             query = (f"SELECT SUM( {column_name} ) AS total FROM rendezvous r JOIN users u "
                         "ON r.user_id = u.user_id WHERE annee = ? AND r.user_id = ?")
             cursor.execute(query, (annee, user_id))
             result = cursor.fetchone()[0]
             cursor.close()
-            
             return result
         else:
             return None
 
-    def total_mensuel(self, column_name, mois, annee, user_id, connection):
+    def total_mensuel(self, column_name, mois, annee, user_id):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
+            connection = self.get_connection()
             cursor = connection.cursor()
             query = (f"SELECT SUM( {column_name} ) AS total FROM rendezvous r JOIN users u "
                         "ON r.user_id = u.user_id WHERE mois = ? AND annee = ? AND r.user_id = ?")
             cursor.execute(query, (mois, annee, user_id))
             result = cursor.fetchone()[0]
             cursor.close()
-
             return result
         else:
             return None
