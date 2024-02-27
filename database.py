@@ -108,6 +108,15 @@ class Database:
         valid_password = bool(result)
         return valid_password
     
+    def get_user_id(self, username):
+        connection = self.get_connection()
+        cursor = connection.cursor()
+        query = ("SELECT user_id FROM users WHERE username = ?")
+        cursor.execute(query, (username,))
+        result = cursor.fetchone()[0]
+        cursor.close()
+        return result
+    
     def total_annuel(self, column_name, annee, user_id):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
             connection = self.get_connection()

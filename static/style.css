@@ -32,23 +32,50 @@
 
 .total-page-container {
     text-align: center;
-    border: 4px solid rgb(216, 112, 147);
-    margin: 15px;
-    border-radius: 10px;
     padding: 1px;
-    box-shadow:0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.montant-page {
-    padding-top: 50px;
-    font-weight: bold;
-    font-size: 20px;
-    
-}
 
 .element-page {
     text-align: left;
     font-size: 25px;
     color: palevioletred;
     font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 25px 15px;
+    background-color: white;
+}
+
+.total-page-background {
+    background-color: pink;
+}
+
+.montant {
+    text-align: right;
+    padding: 0;
+    margin: 0;
+}
+
+.descripteur-page {
+    padding: 0;
+    margin: 0;
+}
+
+.mois-container {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+    margin: 10px;
+}
+
+.mois {
+    padding-top: 9px;
+    padding-left: 9px;
+    font-weight: bold;
+}
+
+.mois-montant {
+    padding: 50px 9px 9px;
+    text-align: right;
 }

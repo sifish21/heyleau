@@ -52,23 +52,24 @@ def close_connection(exception):
         db.disconnect()
 
 
-@app.route('/')
+#@app.route('/')
 def index():
 
     return render_template('index.html')
 
-@app.route('/page', methods=["POST"])
+#@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
     if(val_username(username) and val_password(username, password)):
         current_year = datetime.datetime.now().year
         db = get_db()
-        prix_total = db.total_annuel("prix_total", current_year, 1)
-        tip = db.total_annuel("tip", current_year, 1)
-        taxes = db.total_annuel("taxes_dues", current_year, 1)
-        #depot = db.total_annuel("depot", current_year, 1, connection)
-        return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes)
+        user_id = db.get_user_id(username)
+        prix_total = db.total_annuel("prix_total", current_year, user_id)
+        tip = db.total_annuel("tip", current_year, user_id)
+        taxes = db.total_annuel("taxes_dues", current_year, user_id)
+        depot = db.total_annuel("depot", current_year, user_id)
+        return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes, depot=depot)
     else:
         return render_template('index.html', username=username)
     
@@ -82,3 +83,7 @@ def developpement():
     connection.close()
     db.disconnect()
     return render_template('page.html', prix=prix, tip=tip, taxes=taxes )
+
+@app.route('/')
+def tets():
+    return render_template('page.html')
