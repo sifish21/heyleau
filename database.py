@@ -31,6 +31,22 @@ def _build_rendezvous(result_set_item):
     rendezvous["tip"] = result_set_item[10]
     return rendezvous
 
+def _build_earnings_mois(months):
+    mois = {}
+    mois["janvier"] = months[0]
+    mois["fevrier"] = months[1]
+    mois["mars"] = months[2]
+    mois["avril"] = months[3]
+    mois["mai"] = months[4]
+    mois["juin"] = months[5]
+    mois["juillet"] = months[6]
+    mois["aout"] = months[7]
+    mois["septembre"] = months[8]
+    mois["octobre"] = months[9]
+    mois["novembre"] = months[10]
+    mois["decembre"] = months[11]
+    return mois
+
 
 class Database:
     def __init__(self):
@@ -52,6 +68,20 @@ class Database:
         cursor.execute(query)
         all_data = cursor.fetchall()
         return [_build_rendezvous(item) for item in all_data]
+    
+    def get_monthly_earnings(self):
+        cursor = self.get_connection().cursor()
+        months = []
+        query = ("SELECT SUM(prix_total) AS total FROM rendezvous r JOIN users u ON u.user_id = r.user_id WHERE mois = ?")
+        for i in range(1, 13):
+            cursor.execute(query, (i,))
+            gains = cursor.fetchone()[0]
+            if gains == None:
+                months.append(0)
+            else:
+                months.append(gains)
+        return _build_earnings_mois(months)
+        
 
     def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
