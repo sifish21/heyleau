@@ -52,12 +52,12 @@ def close_connection(exception):
         db.disconnect()
 
 
-@app.route('/')
+#@app.route('/')
 def index():
 
     return render_template('index.html')
 
-@app.route('/page', methods=["POST"])
+#@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
@@ -73,18 +73,11 @@ def page():
         return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes, depot=depot, mois=mois)
     else:
         return render_template('index.html', username=username)
-    
-#@app.route('/')
-def developpement():
-    db = get_db()
-    connection = db.get_connection()
-    prix = db.total_annuel("prix_total", 2024, 1, connection)
-    tip = db.total_annuel("tip", 2024, 1, connection)
-    taxes = db.total_annuel("taxes_dues", 2024, 1, connection)
-    connection.close()
-    db.disconnect()
-    return render_template('page.html', prix=prix, tip=tip, taxes=taxes )
 
-#@app.route('/')
+#@app.route('/page/nouveau')
+def nouveau():
+    return render_template('nouveau.html')
+
+@app.route('/')
 def tets():
-    return render_template('page.html')
+    return render_template('nouveau.html')

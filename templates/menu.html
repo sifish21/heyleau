@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container-fluid text-center" id="top-page">
-        <img src="images/test_2.png" class="img-fluid" id="logo" alt="Logo heyleau">
+        <img src="{{ url_for('static', filename='images/test_2.png') }}" class="img-fluid" id="logo" alt="Logo heyleau">
     </div>
     <main>
         {% block content %}{% endblock %}

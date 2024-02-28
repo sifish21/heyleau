@@ -91,3 +91,27 @@
     background-color: #d87093;
     padding: 5px;
 }
+
+.background-mois {
+    background-color: pink;
+}
+
+.nouveau {
+    margin: 40px 20px 20px 10px;
+}
+
+.field-text-nouveau {
+    margin-bottom: 10px;
+}
+
+.bouton-nouveau {
+    margin-bottom: 10px;
+}
+
+#cash {
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    text-align: center;
+    padding-top: 15px;
+    margin-bottom: 10px;
+}
