@@ -16,6 +16,7 @@ from flask import Flask
 from flask import render_template
 from flask import g
 from flask import redirect,url_for,request
+from flask import session
 from .database import Database
 import re
 import datetime
@@ -49,6 +50,30 @@ def val_nom(nom):
     regex = r'^[- a-zA-Z]+$'
     return len(nom) >= 2 and re.match(regex, nom)
 
+def val_nombre(nombre):
+    try:
+        number = int(nombre)
+        return number > 0
+    except ValueError:
+        return False
+    
+def val_depot(depot):
+    try:
+        number = int(depot)
+        return number >= 0
+    except ValueError:
+        return False
+    
+def val_montant(montant):
+    try:
+        number = float(number)
+        return number >= 0
+    except ValueError:
+        return False
+    
+def val_type_paiement(type):
+    return type in ["interac", "cash", "visa", "mastercard"]
+
 
 
 @app.teardown_appcontext
@@ -76,20 +101,46 @@ def page():
         tip = db.total_annuel("tip", current_year, user_id)
         taxes = db.total_annuel("taxes_dues", current_year, user_id)
         depot = db.total_annuel("depot", current_year, user_id)
+
         mois = db.get_monthly_earnings()
+        session['user_id'] = user_id
         return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes, depot=depot, mois=mois)
     else:
         return redirect(url_for('index', username=username))
 
 @app.route('/page/nouveau', methods=["POST"])
 def nouveau():
-    # il a cliqué sur autre
-    if 'checkbox' in request.form:
-        print(1)
+    if val_nom(request.form["nom"]) and \
+    val_nombre(request.form["nombre"]) and \
+    val_depot(request.form["depot"]) and \
+    val_montant(request.form["fin_payer"]) and \
+    val_montant(request.form["total"]) and \
+    val_type_paiement(request.form["type_paiement"]):
+        
+        tip = 0
+        total_recu = float(request.form["depot"]) + float(request.form["total"])
+        if 'checkbox-taxes' in request.form:
+            tip = float(request.form["total"]) - (float(request.form["fin_payer"]) * 1,14975)
+        else:
+            tip = float(request.form["total"]) - float(request.form["fin_payer"])
+        db = get_db()
+        db.add_rendezvous(session.get('user_id'),
+                          request.form["nom"],
+                          request.form["nombre"],
+                          datetime.datetime.now().day,
+                          datetime.datetime.now().month,
+                          datetime.datetime.now().year,
+                          request.form["depot"],
+                          total_recu,
+                          request.form["type_paiement"],
+                          tip)
+        # il a cliqué sur autre
+        if 'checkbox' in request.form:
+            print(1)
 
-    # il a cliqué sur enregistrer
-    else:
-        print(1)
+        # il a cliqué sur enregistrer
+        else:
+            print(1)
 
     return render_template('nouveau.html')
 

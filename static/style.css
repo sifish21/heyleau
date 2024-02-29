@@ -140,6 +140,10 @@
     display: none;
 }
 
+#checkbox-taxes {
+    display: none;
+}
+
 #submit-button-autre{
     background-color: rgba(211, 211, 211, 0.4);
 }
@@ -150,4 +154,13 @@
 
 #paiement-choisi {
     display: none;
+}
+
+#taxes-div {
+    border-radius: 5px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    text-align: center;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    background-color: white;
 }

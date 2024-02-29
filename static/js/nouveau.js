@@ -12,6 +12,7 @@ var visa_div = document.getElementById('visa');
 var mastercard_div = document.getElementById('mastercard');
 var interac_div = document.getElementById('interac');
 var dollar_div = document.getElementById('dollar-sign');
+var taxes_div = document.getElementById('taxes-div');
 
 // EVENT LISTENERS
 document.querySelectorAll('.type-paiement').forEach(box => {
@@ -58,6 +59,19 @@ form.addEventListener('change', function() {
     verifie_form();
 });
 
+taxes_div.addEventListener('click', function() {
+    var par = document.getElementById('taxes-par');
+    if(window.getComputedStyle(taxes_div).backgroundColor === 'rgb(255, 255, 255)'){
+        taxes_div.style.backgroundColor = 'rgba(255, 0, 0, 0.5)'
+        document.getElementById('checkbox-taxes').checked = true;
+        par.textContent = "Pas de Taxes";
+    } else {
+        taxes_div.style.backgroundColor = 'white'
+        document.getElementById('checkbox-taxes').checked = false;
+        par.textContent = "Taxes";
+    }
+});
+
 
 // FUNCTIONS
 function verifie_form(){
@@ -87,7 +101,6 @@ function check_type_paiement(){
     Array.from(divs).forEach(function(div){
         var style = window.getComputedStyle(div);
         var color = style.backgroundColor;
-        console.log(color);
         if(color === 'rgb(144, 238, 144)'){
             valid = true;
         }

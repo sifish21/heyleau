@@ -27,7 +27,7 @@ def _build_rendezvous(result_set_item):
     rendezvous["annee"] = result_set_item[6]
     rendezvous["depot"] = result_set_item[7]
     rendezvous["prix_total"] = result_set_item[8]
-    rendezvous["taxes_dues"] = result_set_item[9]
+    rendezvous["type_paiement"] = result_set_item[9]
     rendezvous["tip"] = result_set_item[10]
     return rendezvous
 
@@ -64,7 +64,7 @@ class Database:
     def get_all_rendezvous(self):
         cursor = self.get_connection().cursor()
         query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, "
-                 "depot, prix_total, taxes_dues, tip from rendezvous")
+                 "depot, prix_total, type_paiement, tip from rendezvous")
         cursor.execute(query)
         all_data = cursor.fetchall()
         return [_build_rendezvous(item) for item in all_data]
@@ -86,7 +86,7 @@ class Database:
     def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
         query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, depot, "
-                 "prix_total, taxes_dues, tip from rendezvous where id = ?")
+                 "prix_total, type_paiement, tip from rendezvous where id = ?")
         cursor.execute(query, (rendezvous_id,))
         item = cursor.fetchone()
         if item is None:
@@ -94,14 +94,14 @@ class Database:
         else:
             return _build_rendezvous(item)
 
-    def add_rendezvous(self, nom, num_tattoo, mois, jour, description, depot,
-                   prix_total, taxes_dues, tip):
+    def add_rendezvous(self, user_id, nom, num_tattoo, jour, mois, annee, depot,
+                   prix_total, type_paiement, tip):
         connection = self.get_connection()
-        query = ("insert into rendezvous(user_id, nom, num_tattoo, mois, jour, description, "
-                 "depot, prix_total, taxes_dues, tip) "
+        query = ("insert into rendezvous(user_id, nom, num_tattoo, jour, mois, annee, depot, "
+                 "prix_total, type_paiement, tip) "
                  "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
-        connection.execute(query, (nom, num_tattoo, mois, jour, description,
-                                   depot, prix_total, taxes_dues, tip))
+        connection.execute(query, (user_id, nom, num_tattoo, jour, mois, annee, depot,
+                                prix_total, type_paiement, tip))
         cursor = connection.cursor()
         cursor.execute("select last_insert_rowid()")
         lastId = cursor.fetchone()[0]

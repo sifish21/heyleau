@@ -10,32 +10,42 @@
             <form id="formulaire-nouveau" action="/page/nouveau", method="post">
               <div class="row g-3">
                   <div class="col">
-                    <input type="text" id="nom_field" class="form-control field-text-nouveau" placeholder="Nom" aria-label="First name">
+                    <input type="text" name="nom" id="nom_field" class="form-control field-text-nouveau" placeholder="Nom" aria-label="First name">
                   </div>
                   <div class="col">
-                    <input type="text" id="nombre_field" inputmode="numeric" class="form-control field-text-nouveau" placeholder="Nombre de tattoos" aria-label="Last name">
+                    <input type="text" name="nombre" id="nombre_field" inputmode="numeric" class="form-control field-text-nouveau" placeholder="Nombre de tattoos" aria-label="Last name">
                   </div>
                 </div>
               <div class="input-group mb-3">
                   <span class="input-group-text">$</span>
                   <span class="input-group-text" style="padding-right: 46px;">Dépôt</span>
-                  <input type="text" id="depot-field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                  <input type="text" name="depot" id="depot-field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                 </div>
                 <div class="input-group mb-3">
                   <span class="input-group-text">$</span>
                   <span class="input-group-text">Fin à Payer</span>
-                  <input type="text" id="fin_payer_field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                  <input type="text" name="fin_payer" id="fin_payer_field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                 </div>
                 <div class="input-group mb-3">
                   <span class="input-group-text">$</span>
                   <span class="input-group-text" style="padding-right: 15px;">Total Reçu</span>
-                  <input type="text" id="total_field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
+                  <input type="text" name="total" id="total_field" inputmode="numeric" class="form-control" aria-label="Dollar amount (with dot and two decimal places)">
                 </div>
                 <div>
-                  <input type="text" id="paiement-choisi" >
+                  <input type="text" name="type_paiement" id="paiement-choisi" >
                 </div>
                 <div>
-                  <input type="checkbox" id="checkbox" name="checkbox" value="checked">
+                  <input type="checkbox" name="checkbox" id="checkbox" value="checked">
+                </div>
+                <div>
+                  <input type="checkbox" name="checkbox-taxes" id="checkbox-taxes" value="checked">
+                </div>
+                <div class="row">
+                  <div class="col">
+                    <div id="taxes-div">
+                      <p id="taxes-par">Taxes</p>
+                    </div>
+                  </div>
                 </div>
                 <div class="row">
                   <div class="col">
