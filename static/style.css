@@ -11,7 +11,6 @@
     border: 2px solid black;
     padding: 15px;
     border-radius: 20px;
-    width: 30%;
     background-color: white;
 }
 
@@ -22,7 +21,14 @@
 
 #submit-button {
     padding: 10px;
-    
+}
+
+#submit-button-autre {
+    padding: 10px;
+}
+
+#submit-button-enregistrer {
+    padding: 10px;
 }
 
 #error-message-username {
@@ -113,5 +119,19 @@
     border: 1px solid rgba(128, 128, 128, 0.2);
     text-align: center;
     padding-top: 15px;
+    margin-bottom: 10px;
+}
+
+.type-paiement {
+    text-align: center;
+    margin-bottom: 10px;
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    border-radius: 5px;
+    padding-top: 10px;
+    padding-bottom: 0;
+}
+
+
+#interac p {
     margin-bottom: 10px;
 }

@@ -52,12 +52,12 @@ def close_connection(exception):
         db.disconnect()
 
 
-#@app.route('/')
+@app.route('/')
 def index():
 
     return render_template('index.html')
 
-#@app.route('/page', methods=["POST"])
+@app.route('/page', methods=["POST"])
 def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
@@ -74,10 +74,10 @@ def page():
     else:
         return render_template('index.html', username=username)
 
-#@app.route('/page/nouveau')
+@app.route('/page/nouveau')
 def nouveau():
     return render_template('nouveau.html')
 
-@app.route('/')
+#@app.route('/')
 def tets():
     return render_template('nouveau.html')

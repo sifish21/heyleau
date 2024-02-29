@@ -1,11 +1,14 @@
 {% extends 'menu.html' %}
 {% block content %}
 <div class="container-fluid">
-    <div class="row" style="height: 100px; background-color: pink;">
+    <div class="row">
+        <div class="col-sm" style="height: 100px; background-color: pink;"></div>
 
     </div>
-    <div class="row justify-content-sm-center" id="rangee-1-register">
-        <div class="col-sm-auto" id="register-container">
+    
+    <div class="row" id="rangee-1-register">
+        <div class="col-sm"></div>
+        <div class="col-sm" id="register-container">
             <form id="form" action="/page" method="post">
                 <div class="form-floating mb-3">
                     <input type="text" class="form-control" id="floatingInput" name="floatingInput" placeholder="bellibelle">
@@ -25,6 +28,7 @@
                 </div>
             </form>
         </div>
+        <div class="col-sm"></div>
     </div>
 </div>
 <script src="js/index.js"></script>
