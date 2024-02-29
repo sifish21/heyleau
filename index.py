@@ -44,6 +44,12 @@ def val_password(username, password):
         return valid
     else:
         return False
+    
+def val_nom(nom):
+    regex = r'^[- a-zA-Z]+$'
+    return len(nom) >= 2 and re.match(regex, nom)
+
+
 
 @app.teardown_appcontext
 def close_connection(exception):
@@ -52,10 +58,11 @@ def close_connection(exception):
         db.disconnect()
 
 
-@app.route('/')
+#@app.route('/')
 def index():
+    username = request.args.get('username')
 
-    return render_template('index.html')
+    return render_template('index.html', username=username)
 
 @app.route('/page', methods=["POST"])
 def page():
@@ -72,12 +79,20 @@ def page():
         mois = db.get_monthly_earnings()
         return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes, depot=depot, mois=mois)
     else:
-        return render_template('index.html', username=username)
+        return redirect(url_for('index', username=username))
 
-@app.route('/page/nouveau')
+@app.route('/page/nouveau', methods=["POST"])
 def nouveau():
+    # il a cliqué sur autre
+    if 'checkbox' in request.form:
+        print(1)
+
+    # il a cliqué sur enregistrer
+    else:
+        print(1)
+
     return render_template('nouveau.html')
 
-#@app.route('/')
+@app.route('/')
 def tets():
     return render_template('nouveau.html')

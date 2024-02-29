@@ -13,6 +13,13 @@ form.addEventListener('change', function() {
     }
 });
 
+password.addEventListener('input', function(){
+    if(check_username_field() && check_password_field()){
+        bouton.disabled = false;
+        bouton.style.backgroundColor = 'pink';
+    }
+})
+
 function check_username_field(){
     var regex = new RegExp("^[a-zA-Z]{3,20}$");
     return regex.test(username.value);
