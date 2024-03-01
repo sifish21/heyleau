@@ -22,7 +22,7 @@ import re
 import datetime
 
 app = Flask(__name__, static_url_path="", static_folder="static")
-
+app.secret_key = 'caddie.poil'
 
 def get_db():
     db = getattr(g, '_database', None)
@@ -66,7 +66,7 @@ def val_depot(depot):
     
 def val_montant(montant):
     try:
-        number = float(number)
+        number = float(montant)
         return number >= 0
     except ValueError:
         return False
@@ -83,7 +83,7 @@ def close_connection(exception):
         db.disconnect()
 
 
-#@app.route('/')
+@app.route('/')
 def index():
     username = request.args.get('username')
 
@@ -94,19 +94,24 @@ def page():
     username = request.form["floatingInput"]
     password = request.form["floatingPassword"]
     if(val_username(username) and val_password(username, password)):
-        current_year = datetime.datetime.now().year
         db = get_db()
+        current_year = datetime.datetime.now().year
         user_id = db.get_user_id(username)
-        prix_total = db.total_annuel("prix_total", current_year, user_id)
-        tip = db.total_annuel("tip", current_year, user_id)
-        taxes = db.total_annuel("taxes_dues", current_year, user_id)
-        depot = db.total_annuel("depot", current_year, user_id)
-
-        mois = db.get_monthly_earnings()
+        infos = db.get_infos_page(current_year, user_id)
+        mois = db.get_monthly_earnings(current_year, user_id)
         session['user_id'] = user_id
-        return render_template('page.html', prix_total=prix_total, tip=tip, taxes=taxes, depot=depot, mois=mois)
+        return render_template('page.html', infos=infos, mois=mois)
     else:
         return redirect(url_for('index', username=username))
+    
+@app.route('/page')
+def page_2():
+    user_id = session.get('user_id')
+    db = get_db()
+    current_year = datetime.datetime.now().year
+    infos = db.get_infos_page(current_year, user_id)
+    mois = db.get_monthly_earnings(current_year, user_id)
+    return render_template('page.html', infos=infos, mois=mois)
 
 @app.route('/page/nouveau', methods=["POST"])
 def nouveau():
@@ -119,10 +124,12 @@ def nouveau():
         
         tip = 0
         total_recu = float(request.form["depot"]) + float(request.form["total"])
+        pistache = 0
         if 'checkbox-taxes' in request.form:
-            tip = float(request.form["total"]) - (float(request.form["fin_payer"]) * 1,14975)
-        else:
             tip = float(request.form["total"]) - float(request.form["fin_payer"])
+            pistache = 1
+        else:
+            tip = float(request.form["total"]) - (float(request.form["fin_payer"]) * 1.14975)
         db = get_db()
         db.add_rendezvous(session.get('user_id'),
                           request.form["nom"],
@@ -133,17 +140,21 @@ def nouveau():
                           request.form["depot"],
                           total_recu,
                           request.form["type_paiement"],
-                          tip)
+                          tip, 
+                          pistache)
         # il a cliqué sur autre
         if 'checkbox' in request.form:
-            print(1)
-
+            return redirect(url_for('nouveau_2'))
         # il a cliqué sur enregistrer
         else:
-            print(1)
+            return redirect(url_for('page_2'))
 
+    return render_template('error.html')
+
+@app.route('/page/nouveau')
+def nouveau_2():
     return render_template('nouveau.html')
 
-@app.route('/')
+#@app.route('/')
 def tets():
     return render_template('nouveau.html')

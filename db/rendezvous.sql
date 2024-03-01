@@ -6,11 +6,11 @@ create table rendezvous (
   jour integer,
   mois integer,
   annee integer,
-  description varchar(500),
   depot numeric,
   prix_total numeric,
-  taxes_dues numeric,
-  tip numeric
+  type_paiement varchar(10),
+  tip numeric,
+  pistache integer
 );
 
 create table users (
@@ -20,8 +20,8 @@ create table users (
 );
 
 insert into users values (1, 'elo', 'caddierory');
-insert into rendezvous values (1, 1, 'Eloïse', 2, 11, 1, 2024, 'Gentille, talentueuse, belle', 70, 300, 33, 20);
-insert into rendezvous values (2, 1, 'Simon', 2, 10, 2, 2024, 'Gentille, talentueuse, belle', 70, 300, 33, 20);
-insert into rendezvous values (3, 1, 'Caddie', 2, 27, 2, 2024, 'Gentille, talentueuse, belle', 70, 300, 33, 20);
+insert into rendezvous values (1, 1, 'Eloïse', 2, 11, 1, 2024, 70, 300, "interac", 20, 0);
+insert into rendezvous values (2, 1, 'Maya', 2, 12, 1, 2024, 70, 300, "visa", 20, 0);
+insert into rendezvous values (3, 1, 'Caddie', 2, 13, 2, 2024, 70, 300, "cash", 20, 1);
 
 

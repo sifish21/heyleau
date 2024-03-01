@@ -15,6 +15,11 @@
 
 import sqlite3
 
+BRACK_CAN = [15000, 38000, 1000, 51000, 55000, 50000, 200000]
+BRACK_QC = [17000, 1000, 31000, 1000, 50000, 15000, 280000]
+POURC_CAN = [0, 0.1253, 0.1547, 0.1712, 0.2171, 0.2456, 0.2756]
+POURC_QC = [0, 0.114, 0.14, 0.176, 0.19, 0.24, 0.2575]
+IMPOT_MAX = 0.5331
 
 def _build_rendezvous(result_set_item):
     rendezvous = {}
@@ -29,6 +34,7 @@ def _build_rendezvous(result_set_item):
     rendezvous["prix_total"] = result_set_item[8]
     rendezvous["type_paiement"] = result_set_item[9]
     rendezvous["tip"] = result_set_item[10]
+    rendezvous["pistache"] = result_set_item[11]
     return rendezvous
 
 def _build_earnings_mois(months):
@@ -47,6 +53,14 @@ def _build_earnings_mois(months):
     mois["decembre"] = months[11]
     return mois
 
+def _build_infos_page(items):
+    infos = {}
+    infos["prix_total"] = items[0]
+    infos["taxes"] = items[1]
+    infos["qc"] = items[2]
+    infos["can"] = items[3]
+    return infos
+
 
 class Database:
     def __init__(self):
@@ -64,29 +78,36 @@ class Database:
     def get_all_rendezvous(self):
         cursor = self.get_connection().cursor()
         query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, "
-                 "depot, prix_total, type_paiement, tip from rendezvous")
+                 "depot, prix_total, type_paiement, tip, pistache from rendezvous")
         cursor.execute(query)
         all_data = cursor.fetchall()
         return [_build_rendezvous(item) for item in all_data]
     
-    def get_monthly_earnings(self):
+    def get_monthly_earnings(self, annee, user_id):
         cursor = self.get_connection().cursor()
         months = []
-        query = ("SELECT SUM(prix_total) AS total FROM rendezvous r JOIN users u ON u.user_id = r.user_id WHERE mois = ?")
+        query = ("SELECT SUM(prix_total) AS total FROM rendezvous r JOIN users u ON u.user_id = r.user_id WHERE mois = ? AND r.user_id = ? AND annee = ?")
         for i in range(1, 13):
-            cursor.execute(query, (i,))
+            cursor.execute(query, (i, user_id, annee))
             gains = cursor.fetchone()[0]
             if gains == None:
                 months.append(0)
             else:
                 months.append(gains)
         return _build_earnings_mois(months)
+    
+    def get_infos_page(self, current_year, user_id):
+        infos = []
+        infos.append( format(self.total_annuel("prix_total", current_year, user_id), '.2f'))
+        infos.append( format(self.total_taxes_annee(current_year, user_id), '.2f'))
+        infos.append( format(self.total_qc_annee(current_year, user_id), '.2f'))
+        infos.append( format(self.total_can_annee(current_year, user_id), '.2f'))
+        return _build_infos_page(infos)
         
-
     def get_rendezvous(self, rendezvous_id):
         cursor = self.get_connection().cursor()
         query = ("select id, user_id, nom, num_tattoo, jour, mois, annee, depot, "
-                 "prix_total, type_paiement, tip from rendezvous where id = ?")
+                 "prix_total, type_paiement, tip, pistache from rendezvous where id = ?")
         cursor.execute(query, (rendezvous_id,))
         item = cursor.fetchone()
         if item is None:
@@ -95,13 +116,13 @@ class Database:
             return _build_rendezvous(item)
 
     def add_rendezvous(self, user_id, nom, num_tattoo, jour, mois, annee, depot,
-                   prix_total, type_paiement, tip):
+                   prix_total, type_paiement, tip, pistache):
         connection = self.get_connection()
         query = ("insert into rendezvous(user_id, nom, num_tattoo, jour, mois, annee, depot, "
-                 "prix_total, type_paiement, tip) "
-                 "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+                 "prix_total, type_paiement, tip, pistache) "
+                 "values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
         connection.execute(query, (user_id, nom, num_tattoo, jour, mois, annee, depot,
-                                prix_total, type_paiement, tip))
+                                prix_total, type_paiement, tip, pistache))
         cursor = connection.cursor()
         cursor.execute("select last_insert_rowid()")
         lastId = cursor.fetchone()[0]
@@ -159,6 +180,19 @@ class Database:
             return result
         else:
             return None
+    
+    def total_annuel_pistache(self, column_name, annee, user_id, pistache):
+        if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
+            connection = self.get_connection()
+            cursor = connection.cursor()
+            query = (f"SELECT SUM( {column_name} ) AS total FROM rendezvous r JOIN users u "
+                        "ON r.user_id = u.user_id WHERE annee = ? AND r.user_id = ? AND pistache = ?")
+            cursor.execute(query, (annee, user_id, pistache))
+            result = cursor.fetchone()[0]
+            cursor.close()
+            return result
+        else:
+            return None
 
     def total_mensuel(self, column_name, mois, annee, user_id):
         if column_name in ["prix_total", "tip", "taxes_dues", "depot"]:
@@ -172,4 +206,46 @@ class Database:
             return result
         else:
             return None
+        
+    def total_taxes_annee(self, annee, user_id):
+        total_recu = self.total_annuel_pistache("prix_total", annee, user_id, 0)
+        tips_recu = self.total_annuel_pistache("tip", annee, user_id, 0)
+        return (total_recu - tips_recu) * 0.11
+    
+    def total_qc_annee(self, annee, user_id):
+        total_taxable = self.total_annuel_pistache("prix_total", annee, user_id, 0)
+        impots_qc = 0
+        i = 0
+        if total_taxable > 250000:
+            impots_qc = (total_taxable - 250000) * IMPOT_MAX
+            total_taxable = 250000
+
+        while total_taxable > 0:
+            if total_taxable < BRACK_QC[i]:
+                impots_qc += (total_taxable * POURC_QC[i])
+                total_taxable = 0
+            else:
+                impots_qc += (BRACK_QC[i] * POURC_QC[i])
+                total_taxable -= BRACK_QC[i]
+            i += 1
+        return impots_qc
+
+    def total_can_annee(self, annee, user_id):
+        total_taxable = self.total_annuel_pistache("prix_total", annee, user_id, 0)
+        impots_can = 0
+        i = 0
+        if total_taxable > 250000:
+            impots_can = (total_taxable - 250000) * IMPOT_MAX
+            total_taxable = 250000
+            
+        while total_taxable > 0:
+            if total_taxable < BRACK_CAN[i]:
+                impots_can += (total_taxable * POURC_CAN[i])
+                total_taxable = 0
+            else:
+                impots_can += (BRACK_CAN[i] * POURC_CAN[i])
+                total_taxable -= BRACK_CAN[i]
+
+        return impots_can
+        
     
