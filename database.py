@@ -19,7 +19,8 @@ BRACK_CAN = [15000, 38000, 1000, 51000, 55000, 50000, 200000]
 BRACK_QC = [17000, 1000, 31000, 1000, 50000, 15000, 280000]
 POURC_CAN = [0, 0.1253, 0.1547, 0.1712, 0.2171, 0.2456, 0.2756]
 POURC_QC = [0, 0.114, 0.14, 0.176, 0.19, 0.24, 0.2575]
-IMPOT_MAX = 0.5331
+IMPOT_MAX_QC = 0.2575
+IMPOT_MAX_CAN = 0.2756
 
 def _build_rendezvous(result_set_item):
     rendezvous = {}
@@ -217,7 +218,7 @@ class Database:
         impots_qc = 0
         i = 0
         if total_taxable > 250000:
-            impots_qc = (total_taxable - 250000) * IMPOT_MAX
+            impots_qc = (total_taxable - 250000) * IMPOT_MAX_QC
             total_taxable = 250000
 
         while total_taxable > 0:
@@ -235,7 +236,7 @@ class Database:
         impots_can = 0
         i = 0
         if total_taxable > 250000:
-            impots_can = (total_taxable - 250000) * IMPOT_MAX
+            impots_can = (total_taxable - 250000) * IMPOT_MAX_CAN
             total_taxable = 250000
             
         while total_taxable > 0:
@@ -245,6 +246,7 @@ class Database:
             else:
                 impots_can += (BRACK_CAN[i] * POURC_CAN[i])
                 total_taxable -= BRACK_CAN[i]
+            i += 1
 
         return impots_can
         

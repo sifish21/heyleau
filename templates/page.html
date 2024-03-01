@@ -46,6 +46,18 @@
                       <p class="montant">${{infos.can}}</p>
                 </div>
             </div>
+            {% if rdvs %}
+            <div>
+                {% for rdv in rdvs %}
+                    <p>{{ rdv.id }}</p>
+                    <p>{{ rdv.nom }}</p>
+                    <p>{{ rdv.prix_total }}</p>
+                    <p>{{ rdv.type_paiement }}</p>
+                    <p>{{ rdv.tip }}</p>
+                    <p>{{ rdv.pistache }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
         <div class="col-sm">
             <div class="row">

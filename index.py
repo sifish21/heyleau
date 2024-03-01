@@ -100,7 +100,8 @@ def page():
         infos = db.get_infos_page(current_year, user_id)
         mois = db.get_monthly_earnings(current_year, user_id)
         session['user_id'] = user_id
-        return render_template('page.html', infos=infos, mois=mois)
+        rdvs = db.get_all_rendezvous()
+        return render_template('page.html', infos=infos, mois=mois, rdvs=rdvs)
     else:
         return redirect(url_for('index', username=username))
     
